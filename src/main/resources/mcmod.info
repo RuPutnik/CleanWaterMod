@@ -1,0 +1,16 @@
+[
+{
+  "modid": "cleanwatermod",
+  "name": "Clean Water Mod",
+  "description": "clean water mod.",
+  "version": "0.6.1",
+  "mcversion": "1.7.10",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Putnik13"],
+  "credits": "The testing alpha version mod LOL:)",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

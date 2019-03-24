@@ -88,7 +88,9 @@ public class FreshBucketHandler {
                                     break;
                                 }
                             }
+
                             int meta = world.getBlockMetadata(x, y, z);
+                            //В креативе вода из вёдер не тратится
                             if (world.getBlock(x, y, z).equals(Blocks.air) || (world.getBlock(x, y, z).equals(CoreMod.cleanWaterBlock) && meta != 0)) {
                                 if(!event.entityPlayer.capabilities.isCreativeMode) {
                                     int currentItem = inventory.currentItem;
@@ -96,13 +98,14 @@ public class FreshBucketHandler {
                                     inventory.setInventorySlotContents(currentItem, new ItemStack(Items.bucket));
                                 }
                                 //Если пытаемся ставить в аду - испаряется как и обычная вода
-                                if(checkForNetherWorld(world)) {
+                                if(!world.provider.isHellWorld) {
                                     world.setBlock(x, y, z, CoreMod.cleanWaterBlock);
                                 }else{
                                     world.setBlock(x, y, z, Blocks.air);
                                     //Частицы пара
                                     for (int l = 0; l < 8; ++l) {
-                                        world.spawnParticle("largesmoke", x+Math.random(), y+Math.random(), z+Math.random(), 0D, 0D, 0D);
+                                        world.spawnParticle("largesmoke", x+Math.random(), y+Math.random(),
+                                                z+Math.random(), 0D, 0D, 0D);
                                     }
 
                                 }
@@ -110,8 +113,5 @@ public class FreshBucketHandler {
                         }
                     }
                 }
-    }
-    private boolean checkForNetherWorld(World w){
-        return w.provider.dimensionId != -1;//Нельзя ставить в аду
     }
 }

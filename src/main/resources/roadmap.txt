@@ -1,9 +1,9 @@
--test texture v2
--texture tanks in gui
--new gui (3x filters)
--recipe craft
--final texture
--sound
--news filters
--git
--slots for buckets and bottles
+-test texture v2 - 0.7
+-texture tanks in gui - 0.7
+-new gui (3x filters) - 0.8
+-slots for buckets and bottles  - 0.8
+-recipe craft - 0.9
+-final texture - 0.9
+-sound - 0.9
+-news filters - 1.0
+

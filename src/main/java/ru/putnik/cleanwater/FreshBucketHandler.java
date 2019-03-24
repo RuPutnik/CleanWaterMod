@@ -90,13 +90,28 @@ public class FreshBucketHandler {
                             }
                             int meta = world.getBlockMetadata(x, y, z);
                             if (world.getBlock(x, y, z).equals(Blocks.air) || (world.getBlock(x, y, z).equals(CoreMod.cleanWaterBlock) && meta != 0)) {
-                                int currentItem = inventory.currentItem;
-                                --inventory.mainInventory[currentItem].stackSize;
-                                inventory.setInventorySlotContents(currentItem, new ItemStack(Items.bucket));
-                                world.setBlock(x, y, z, CoreMod.cleanWaterBlock);
+                                if(!event.entityPlayer.capabilities.isCreativeMode) {
+                                    int currentItem = inventory.currentItem;
+                                    --inventory.mainInventory[currentItem].stackSize;
+                                    inventory.setInventorySlotContents(currentItem, new ItemStack(Items.bucket));
+                                }
+                                //Если пытаемся ставить в аду - испаряется как и обычная вода
+                                if(checkForNetherWorld(world)) {
+                                    world.setBlock(x, y, z, CoreMod.cleanWaterBlock);
+                                }else{
+                                    world.setBlock(x, y, z, Blocks.air);
+                                    //Частицы пара
+                                    for (int l = 0; l < 8; ++l) {
+                                        world.spawnParticle("largesmoke", x+Math.random(), y+Math.random(), z+Math.random(), 0D, 0D, 0D);
+                                    }
+
+                                }
                             }
                         }
                     }
                 }
+    }
+    private boolean checkForNetherWorld(World w){
+        return w.provider.dimensionId != -1;//Нельзя ставить в аду
     }
 }

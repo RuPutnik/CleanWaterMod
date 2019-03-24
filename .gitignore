@@ -12,3 +12,4 @@ src/main/java/com/test/testmod/
 .gradle/
 eclipse/
 gradle/
+src/main/resources/assets/testmod/textures/

@@ -1,4 +1,3 @@
--test texture v2 - 0.7
 -texture tanks in gui - 0.7
 -new gui (3x filters) - 0.8
 -slots for buckets and bottles  - 0.8
@@ -6,4 +5,5 @@
 -final texture - 0.9
 -sound - 0.9
 -news filters - 1.0
+-faithful texture of bucket clean water - 1.0
 

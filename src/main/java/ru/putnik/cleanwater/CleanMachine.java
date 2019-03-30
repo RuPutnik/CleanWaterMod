@@ -10,18 +10,21 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 import java.util.Random;
 
 public class CleanMachine extends BlockContainer implements ITileEntityProvider {
     private final Random random = new Random();
+    private IIcon[] iconSide = new IIcon[6];
 
     private static CoreMod instance;
     public CleanMachine(Material material, CoreMod instanceMod)
@@ -37,6 +40,19 @@ public class CleanMachine extends BlockContainer implements ITileEntityProvider 
 
         instance = instanceMod;
     }
+
+    @Override
+    public IIcon getIcon(int side, int meta) {
+        return this.iconSide[side];
+    }
+
+    @Override
+    public void registerBlockIcons(IIconRegister reg) {
+        for (int a=0;a<6;a++){
+            iconSide[a]=reg.registerIcon(this.textureName+"/cleanser"+"_"+a);
+        }
+    }
+
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player,
                                     int par1, float par2, float par3, float par4) {

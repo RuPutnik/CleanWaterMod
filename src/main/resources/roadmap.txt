@@ -1,5 +1,4 @@
--texture tanks in gui - 0.7
--new gui (3x filters) - 0.8
+git lo-new gui (3x filters) - 0.8
 -slots for buckets and bottles  - 0.8
 -recipe craft - 0.9
 -final texture - 0.9

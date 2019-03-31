@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL11;
  */
 @SideOnly(Side.CLIENT)
 public class CleanMachineGui extends GuiBuildCraft {
-    private static ResourceLocation location=new ResourceLocation(CoreMod.MODID+":textures/gui/machinegui.png");
+    private static ResourceLocation location=new ResourceLocation(CoreMod.MODID+":textures/gui/cleanser.png");
     private CleanMachineContainer container;
     public CleanMachineGui(InventoryPlayer inventory, CleanMachineTile testTile){
         super(new CleanMachineContainer(inventory,testTile),(IInventory)null,location);
@@ -25,7 +25,7 @@ public class CleanMachineGui extends GuiBuildCraft {
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float p_146976_1_, int p_146976_2_, int p_146976_3_) {
+    protected void drawGuiContainerBackgroundLayer(float partialTick, int x, int y) {
         GL11.glColor4f(1F,1F,1F,1F);
         mc.renderEngine.bindTexture(location);
         int q=(width-xSize)/2;
@@ -36,9 +36,9 @@ public class CleanMachineGui extends GuiBuildCraft {
     }
     //TO DO
     @Override
-    protected void drawGuiContainerForegroundLayer(int p_146979_1_, int p_146979_2_) {
-        String line="Водяной фильтр";
-        fontRendererObj.drawString(StatCollector.translateToLocal(line), 10, 10,4210752);
+    protected void drawGuiContainerForegroundLayer(int x, int y) {
+        String line="Очистное сооружение";
+        fontRendererObj.drawString(StatCollector.translateToLocal(line), 50, 6,4210752);
         fontRendererObj.drawString("Energy: " + container.machineTile.getBattery().getEnergyStored(), 10, 30, 4210752);
         fontRendererObj.drawString("Dirt water: " + container.machineTile.getTankWater().getFluidAmount(), 10, 50, 4210752);
         fontRendererObj.drawString("Clear water: " + container.machineTile.getTankCleanWater().getFluidAmount(), 10, 70, 4210752);

@@ -50,6 +50,8 @@ public class CoreMod {
 
         GameRegistry.registerTileEntity(CleanMachineTile.class,MODID+":CleanMachineTile");
         FreshBucketHandler.INSTANCE.buckets.put(cleanWaterBlock, ItemLoader.freshWaterBucket);
+
+        //ItemLoader.freshWaterBucket.setTextureName()
     }
     @Mod.EventHandler
     public void Init(FMLInitializationEvent event){

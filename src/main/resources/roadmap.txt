@@ -4,5 +4,4 @@ git lo-new gui (3x filters) - 0.8
 -final texture - 0.9
 -sound - 0.9
 -news filters - 1.0
--faithful texture of bucket clean water - 1.0
 

@@ -71,7 +71,7 @@ public class CleanMachine extends BlockContainer implements ITileEntityProvider 
     }
     @Override
     public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
-        return new CleanMachineTile("CleanMachineInventory", true);
+        return new CleanMachineTile("CleanserInventory", true);
     }
     @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int p_149749_6_) {

@@ -31,11 +31,11 @@ import java.util.List;
  * Created by My Computer on 09.09.2017.
  */
 public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,IPipeConnection,IFluidHandler,IRedstoneEngineReceiver {
-    private String inventoryTitle="CleanMachineInventory";
+    private String inventoryTitle="CleanserInventory";
     private int slotsCount;
     private ItemStack[] inventoryContents;
     private List field_70480_d;
-    private boolean field_94051_e;
+    private boolean hasCustomInventoryName;
     private boolean powerRedEnable;
     private Tank tankWater;
     private Tank tankCleanWater;
@@ -46,10 +46,10 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     private double rateProduction=1;
     private double rateEnergyCost=1;
 
-   public CleanMachineTile(String inventoryTitle, boolean p_i1561_2_)
+   public CleanMachineTile(String inventoryTitle, boolean hasCustomInventoryName)
     {
         this.inventoryTitle = inventoryTitle;
-        this.field_94051_e = p_i1561_2_;
+        this.hasCustomInventoryName = hasCustomInventoryName;
         init();
     }
     public CleanMachineTile(){
@@ -113,6 +113,8 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
                     }
                 }
                 worldObj.markBlockForUpdate(xCoord,yCoord,zCoord);
+                updateContainingBlockInfo();
+
             }
     }
     //Рассчитываем коэффициенты эффективност и затрат энергии в зависимости от количества запасенной энергии
@@ -194,13 +196,13 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
 
     @Override
     public String getInventoryName(){
-        return this.hasCustomInventoryName() ? this.inventoryTitle : "container.cleanmachine";
+        return this.hasCustomInventoryName() ? this.inventoryTitle : "CleanserInventory";
     }
 
     @Override
     public boolean hasCustomInventoryName()
     {
-        return this.field_94051_e;
+        return this.hasCustomInventoryName;
     }
 
     @Override
@@ -223,30 +225,29 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     @Override
     public boolean isItemValidForSlot(int p_94041_1_, ItemStack stack) {
         if(stack!=null){
-            return (stack.getItem() == ItemLoader.filter||stack.getItem()==ItemLoader.charcoalFilter);
+            return (stack.getItem() == ItemLoader.filter);
         } else return false;
     }
     @Override
     public void readFromNBT(NBTTagCompound data) {
     super.readFromNBT(data);
-    NBTTagList tagList = data.getTagList("Items", 10);
+    NBTTagList tagList = data.getTagList("Data", 10);
     inventoryContents = new ItemStack[Constants.SlotCount];
-
-    if(data.hasKey("CustomName", 8)){
-        this.inventoryTitle = data.getString("CustomName");
+    if(data.hasKey("CleanserInventory", 8)){
+        this.inventoryTitle = data.getString("CleanserInventory");
     }
-
-    for(int i = 0; i < tagList.tagCount(); i++){
+    //Последний тег под дополнительные данные, а все до него - под предметы
+    for(int i = 0; i < tagList.tagCount()-1; i++){
         NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
         int j = tagCompound.getByte("Slot") & 255;
-
-        if(j >= 0 && j < this.inventoryContents.length){
-            this.inventoryContents[j] = ItemStack.loadItemStackFromNBT(tagCompound);
-        }
+        setInventorySlotContents(j,ItemStack.loadItemStackFromNBT(tagCompound));
+    }
+        //Подгружаем дополнительные данные
+        NBTTagCompound tagCompound = tagList.getCompoundTagAt(2);
         powerRedEnable = tagCompound.getBoolean("redPowerEnable");
         tankWater.fill(new FluidStack(FluidRegistry.WATER,tagCompound.getInteger("waterAmount")),true);
         tankCleanWater.fill(new FluidStack(CoreMod.cleanWaterFluid,tagCompound.getInteger("clearWaterAmount")),true);
-    }
+
         tankWater.readFromNBT(data);
         tankCleanWater.readFromNBT(data);
     }
@@ -254,22 +255,26 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     public void writeToNBT(NBTTagCompound data) {
         super.writeToNBT(data);
         NBTTagList tagList = new NBTTagList();
-        NBTTagCompound tagCompound = new NBTTagCompound();
+        NBTTagCompound tagCompound;
         for(int i = 0; i < this.inventoryContents.length; i++){
-            if (this.inventoryContents[i] != null) {
-                tagCompound.setByte("Slot", (byte) i);
-                this.inventoryContents[i].writeToNBT(tagCompound);
+            if (getStackInSlot(i)!= null) {
+                tagCompound = new NBTTagCompound();
+                tagCompound.setByte("Slot", (byte) i);//Номер слота
+                tagCompound=getStackInSlot(i).writeToNBT(tagCompound);//Сам предмет
+
+                tagList.appendTag(tagCompound);
             }
         }
+        tagCompound = new NBTTagCompound();//Тег для дополнительных данных
         tagCompound.setBoolean("redPowerEnable", powerRedEnable);
         tagCompound.setInteger("waterAmount",tankWater.getFluidAmount());
         tagCompound.setInteger("clearWaterAmount",tankCleanWater.getFluidAmount());
 
         tagList.appendTag(tagCompound);
-        data.setTag("Items", tagList);
+        data.setTag("Data", tagList);
 
         if(this.hasCustomInventoryName()) {
-            data.setString("CustomName", this.inventoryTitle);
+            data.setString("CleanserInventory", this.inventoryTitle);
         }
         tankWater.writeToNBT(data);
         tankCleanWater.writeToNBT(data);
@@ -283,7 +288,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
             return ConnectOverride.DISCONNECT;
         }
     }
-
+    //Нужен ли?
     @Override
     public void markDirty(){
         if (this.field_70480_d != null){
@@ -360,6 +365,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
                     inventory[0]=null;
                     inventory[1] = dirtyFilter;
                 }
+
             }
         }
     }
@@ -416,7 +422,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     public Tank getTankCleanWater() {
         return tankCleanWater;
     }
-
+    //Нужны ли эти методы??
     public void func_110134_a(IInvBasic p_110134_1_)
     {
         if (this.field_70480_d == null)
@@ -432,7 +438,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     }
     public void func_110133_a(String p_110133_1_)
     {
-        this.field_94051_e = true;
+        this.hasCustomInventoryName = true;
         this.inventoryTitle = p_110133_1_;
     }
 }

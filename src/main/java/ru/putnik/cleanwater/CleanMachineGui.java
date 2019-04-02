@@ -49,6 +49,7 @@ public class CleanMachineGui extends GuiBuildCraft {
         mc.renderEngine.bindTexture(location);
         this.drawTexturedModalRect(this.guiLeft + 26, this.guiTop + 20, 176, 0, 16, 60);
         this.drawTexturedModalRect(this.guiLeft + 135, this.guiTop + 20, 176, 0, 16, 60);
+
     }
 
     @Override

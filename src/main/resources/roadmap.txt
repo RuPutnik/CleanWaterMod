@@ -1,7 +1,9 @@
-git lo-new gui (3x filters) - 0.8
+исправить баги с состоянием фильтра и количеством очищаемой воды с 1 фильтра и исчезновением текстуры фильтра
+-new gui (3x filters) - 0.8
 -slots for buckets and bottles  - 0.8
 -recipe craft - 0.9
 -final texture - 0.9
 -sound - 0.9
 -news filters - 1.0
+-coca cola item - 1.0
 

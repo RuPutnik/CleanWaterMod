@@ -22,7 +22,7 @@ public class CleanMachineContainer extends BuildCraftContainer {
         super(1);
         machineTile=tile;
 
-        this.addSlotToContainer(new MachineSlot(tile,0,59,24,new ItemStack[]{new ItemStack(ItemLoader.filter),new ItemStack(ItemLoader.charcoalFilter)},1));
+        this.addSlotToContainer(new MachineSlot(tile,0,59,24,new ItemStack[]{new ItemStack(ItemLoader.filter)},1));
         this.addSlotToContainer(new MachineSlot(tile,1,59,58,null,64));
 
         int i;

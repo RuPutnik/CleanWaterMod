@@ -31,7 +31,7 @@ import java.util.List;
  * Created by My Computer on 09.09.2017.
  */
 public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,IPipeConnection,IFluidHandler,IRedstoneEngineReceiver {
-    private String inventoryTitle="CleanMachInv";
+    private String inventoryTitle="CleanMachineInventory";
     private int slotsCount;
     private ItemStack[] inventoryContents;
     private List field_70480_d;
@@ -113,10 +113,9 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
                     }
                 }
                 worldObj.markBlockForUpdate(xCoord,yCoord,zCoord);
-
             }
     }
-    //Рассчитываем коээфициенты эффективност и затрат энергии в зависимости от количества запасенной энергии
+    //Рассчитываем коэффициенты эффективност и затрат энергии в зависимости от количества запасенной энергии
     // (а косвенно от количество приходящей энергии - для поддержания запаса)
     private void calculateRate(){
         if(getBattery().getEnergyStored()<Constants.CapacityEnergy/3){
@@ -278,7 +277,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
 
     @Override
     public ConnectOverride overridePipeConnection(IPipeTile.PipeType pipeType, ForgeDirection forgeDirection) {
-        if(pipeType!= IPipeTile.PipeType.ITEM) {
+        if(pipeType!=IPipeTile.PipeType.ITEM) {
             return ConnectOverride.CONNECT;
         }else {
             return ConnectOverride.DISCONNECT;
@@ -362,18 +361,13 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
                     inventory[1] = dirtyFilter;
                 }
             }
-        }else if(inventory[0].getItem()==ItemLoader.charcoalFilter){
-            if (damage >= 5) {
-                if (inventory[0]!=null) {
-                    inventory[0] = null;
-                }
-            }
         }
     }
     public boolean checkCondition(){
         if(inventoryContents[0] != null &&(inventoryContents[0].getItem().equals(ItemLoader.filter)||
                 inventoryContents[0].getItem().equals(ItemLoader.charcoalFilter))&&checkSlotDirtyFilters(inventoryContents[1])){
-            if(getBattery().getEnergyStored()>Constants.CountEnergyForOneCleaning) {//Если хватает энергии
+            //Если хватает энергии и бак с чистой водой не заполнен
+            if(getBattery().getEnergyStored()>Constants.CountEnergyForOneCleaning&&getTankCleanWater().getFluidAmount()<getTankCleanWater().getCapacity()) {
                 return tankWater.getFluid() != null && powerRedEnable;
             }else return false;
         }else return false;
@@ -384,14 +378,14 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     }
     public void clearWater() {
         tempVolumeCleanWater+=Constants.VolumeCWaterAtATime;
-        if (tempVolumeCleanWater >= Constants.VolumeCWaterForFilter) {
+        if (tempVolumeCleanWater >= Constants.CountClearWaterForFilter) {
             damageFilter++;
             inventoryContents[0].setItemDamage(damageFilter);
             tempVolumeCleanWater = 0;
             litterFilter(damageFilter, inventoryContents);
         }
-        tankWater.drain((int)(Constants.CountWaterAbsorbing* rateProduction), true);
-        tankCleanWater.fill(new FluidStack(CoreMod.cleanWaterFluid, (int)(Constants.VolumeCWaterAtATime* rateProduction)), true);
+        tankWater.drain((int)(Constants.CountWaterAbsorbing * rateProduction), true);
+        tankCleanWater.fill(new FluidStack(CoreMod.cleanWaterFluid, (int)(Constants.VolumeCWaterAtATime * rateProduction)), true);
     }
     @Override
     public Packet getDescriptionPacket() {

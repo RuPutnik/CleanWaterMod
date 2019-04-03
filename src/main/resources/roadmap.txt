@@ -1,4 +1,3 @@
-проверить сохранение сигнала редстоуна(вроде работает)
 -new gui (3x filters) - 0.8
 -slots for buckets and bottles  - 0.8
 -recipe craft - 0.9

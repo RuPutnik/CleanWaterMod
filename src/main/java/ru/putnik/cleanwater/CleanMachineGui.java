@@ -1,9 +1,11 @@
 package ru.putnik.cleanwater;
 
+import buildcraft.core.lib.RFBattery;
 import buildcraft.core.lib.fluids.Tank;
 import buildcraft.core.lib.gui.GuiBuildCraft;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
@@ -37,21 +39,38 @@ public class CleanMachineGui extends GuiBuildCraft {
         drawTexturedModalRect(q, ui, 0, 0, xSize, ySize);
 
         CleanMachineTile tile = container.machineTile;
-        Tank tankWater=null;
-        Tank tankClearWater=null;
+        Tank tankWater;
+        Tank tankClearWater;
+        RFBattery battery;
+        int heightScaleEnergyTexture;
         if(tile!=null) {
             tankWater = tile.getTankWater();
             tankClearWater = tile.getTankCleanWater();
-        }
-            this.drawFluid(Objects.requireNonNull(tankWater).getFluid(), this.guiLeft + 26, this.guiTop + 20, 16, 58,tankWater.getCapacity());
-            this.drawFluid(Objects.requireNonNull(tankClearWater).getFluid(),this.guiLeft + 135,this.guiTop + 20,16,58,tankClearWater.getCapacity());
+            battery=tile.getBattery();
 
+            heightScaleEnergyTexture=(int)(((double)battery.getEnergyStored()/battery.getMaxEnergyStored())*42);
+
+            this.drawFluid(tankWater.getFluid(), this.guiLeft + 26, this.guiTop + 20, 16, 58,tankWater.getCapacity());
+            this.drawFluid(tankClearWater.getFluid(),this.guiLeft + 135,this.guiTop + 20,16,58,tankClearWater.getCapacity());
+            this.drawInventorTexturedModalRect(this.guiLeft+125,this.guiTop+77,176,74,5,heightScaleEnergyTexture);
+        }
         mc.renderEngine.bindTexture(location);
         this.drawTexturedModalRect(this.guiLeft + 26, this.guiTop + 20, 176, 0, 16, 60);
         this.drawTexturedModalRect(this.guiLeft + 135, this.guiTop + 20, 176, 0, 16, 60);
 
     }
-
+    //Строит текстуру снизу вверх, то есть инвертивно
+    public void drawInventorTexturedModalRect(int guiX, int guiY, int textureFragmentX, int textureFragmentY, int width, int height){
+        mc.renderEngine.bindTexture(location);
+        float f = 0.00390625F;
+        Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.addVertexWithUV(guiX + width, guiY, this.zLevel, (double)((float)(textureFragmentX + width) * f), (double)((float)(textureFragmentY) * f));
+        tessellator.addVertexWithUV(guiX + width, guiY - height, this.zLevel, (double)((float)(textureFragmentX + width) * f), (double)((float)(textureFragmentY + height) * f));
+        tessellator.addVertexWithUV(guiX, guiY - height, this.zLevel, (double)((float)(textureFragmentX) * f), (double)((float)(textureFragmentY + height) * f));
+        tessellator.addVertexWithUV(guiX, guiY, this.zLevel, (double)((float)(textureFragmentX) * f), (double)((float)(textureFragmentY) * f));
+        tessellator.draw();
+    }
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         String line="Очистное сооружение";

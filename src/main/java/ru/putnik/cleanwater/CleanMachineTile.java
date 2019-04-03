@@ -243,10 +243,11 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
         setInventorySlotContents(j,ItemStack.loadItemStackFromNBT(tagCompound));
     }
         //Подгружаем дополнительные данные
-        NBTTagCompound tagCompound = tagList.getCompoundTagAt(2);
+        NBTTagCompound tagCompound = tagList.getCompoundTagAt(tagList.tagCount()-1);
         powerRedEnable = tagCompound.getBoolean("redPowerEnable");
         tankWater.fill(new FluidStack(FluidRegistry.WATER,tagCompound.getInteger("waterAmount")),true);
         tankCleanWater.fill(new FluidStack(CoreMod.cleanWaterFluid,tagCompound.getInteger("clearWaterAmount")),true);
+        damageFilter=tagCompound.getInteger("damageFilter");
 
         tankWater.readFromNBT(data);
         tankCleanWater.readFromNBT(data);
@@ -269,7 +270,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
         tagCompound.setBoolean("redPowerEnable", powerRedEnable);
         tagCompound.setInteger("waterAmount",tankWater.getFluidAmount());
         tagCompound.setInteger("clearWaterAmount",tankCleanWater.getFluidAmount());
-
+        tagCompound.setInteger("damageFilter",damageFilter);
         tagList.appendTag(tagCompound);
         data.setTag("Data", tagList);
 

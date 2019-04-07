@@ -1,32 +1,25 @@
 package ru.putnik.cleanwater;
 
-
 import com.thetorine.thirstmod.core.main.ThirstMod;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockNetherrack;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 
-import java.util.Date;
-
 /**
  * Created by My Computer on 09.09.2017.
  */
 public class FreshWaterFluid extends BlockFluidClassic {
     @SideOnly(Side.CLIENT)
-    public IIcon stillIcon;
+    private IIcon stillIcon;
     @SideOnly(Side.CLIENT)
-    public IIcon flowingIcon;
-    public FreshWaterFluid(Fluid fluid, Material material) {
+    private IIcon flowingIcon;
+    FreshWaterFluid(Fluid fluid, Material material) {
         super(fluid, material);
         setCreativeTab(ThirstMod.thirstCreativeTab);
         setDensity(10);//Плотность

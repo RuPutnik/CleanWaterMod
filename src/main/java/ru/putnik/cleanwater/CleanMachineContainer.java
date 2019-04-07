@@ -1,16 +1,12 @@
 package ru.putnik.cleanwater;
 
 import buildcraft.core.lib.gui.BuildCraftContainer;
-import buildcraft.core.lib.gui.widgets.Widget;
 import com.thetorine.thirstmod.core.content.ItemLoader;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import java.util.Iterator;
 
 /**
  * Created by My Computer on 21.09.2017.

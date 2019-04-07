@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class FreshBucketHandler {
     public static FreshBucketHandler INSTANCE = new FreshBucketHandler();
-    public Map<Block, Item> buckets = new HashMap();
+    public Map<Block, Item> buckets = new HashMap<>();
     private FreshBucketHandler() {}
     @SubscribeEvent
     public void onBucketFill(FillBucketEvent event) {

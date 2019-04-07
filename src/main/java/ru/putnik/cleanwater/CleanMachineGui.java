@@ -9,12 +9,10 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by My Computer on 21.09.2017.
@@ -52,7 +50,7 @@ public class CleanMachineGui extends GuiBuildCraft {
 
             this.drawFluid(tankWater.getFluid(), this.guiLeft + 26, this.guiTop + 20, 16, 58,tankWater.getCapacity());
             this.drawFluid(tankClearWater.getFluid(),this.guiLeft + 135,this.guiTop + 20,16,58,tankClearWater.getCapacity());
-            this.drawInventorTexturedModalRect(this.guiLeft+125,this.guiTop+77,176,74,5,heightScaleEnergyTexture);
+            this.drawInventorTexturedModalRect(this.guiLeft + 125,this.guiTop + 77,176,74,5,heightScaleEnergyTexture);
         }
         mc.renderEngine.bindTexture(location);
         this.drawTexturedModalRect(this.guiLeft + 26, this.guiTop + 20, 176, 0, 16, 60);
@@ -60,7 +58,7 @@ public class CleanMachineGui extends GuiBuildCraft {
 
     }
     //Строит текстуру снизу вверх, то есть инвертивно
-    public void drawInventorTexturedModalRect(int guiX, int guiY, int textureFragmentX, int textureFragmentY, int width, int height){
+    private void drawInventorTexturedModalRect(int guiX, int guiY, int textureFragmentX, int textureFragmentY, int width, int height){
         mc.renderEngine.bindTexture(location);
         float f = 0.00390625F;
         Tessellator tessellator = Tessellator.instance;
@@ -75,22 +73,36 @@ public class CleanMachineGui extends GuiBuildCraft {
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         String line="Очистное сооружение";
         fontRendererObj.drawString(StatCollector.translateToLocal(line), 50, 6,4210752);
-        fontRendererObj.drawString("Energy: " + container.machineTile.getBattery().getEnergyStored(), 10, 30, 4210752);
-        fontRendererObj.drawString("Dirt water: " + container.machineTile.getTankWater().getFluidAmount(), 10, 50, 4210752);
-        fontRendererObj.drawString("Clear water: " + container.machineTile.getTankCleanWater().getFluidAmount(), 10, 70, 4210752);
 
-        /*if (container.machineTile.getTankWater().getFluid() != null && container.machineTile.getTankWater().getFluid().amount > 0) {
-            List<String> fluidTip = new ArrayList<>();
-            fluidTip.add(container.machineTile.getTankWater().getFluid().getLocalizedName());
-            fluidTip.add(String.valueOf(container.machineTile.getTankWater().getFluid().amount));
-            if(Mouse.getX()>458&&Mouse.getX()<489&&Mouse.getY()>253&&Mouse.getY()<367) {//Привязать к границам текстуры из метода выше
-                System.out.println(true);
-                this.drawHoveringText(fluidTip, x - this.guiLeft, y - this.guiTop, this.fontRendererObj);
+        List<String> waterTip = new ArrayList<>();
+        List<String> clearWaterTip = new ArrayList<>();
+        List<String> energyTip = new ArrayList<>();
+
+        CleanMachineTile tile = container.machineTile;
+        Tank tankWater;
+        Tank tankClearWater;
+        RFBattery battery;
+        if(tile!=null) {
+            tankWater = tile.getTankWater();
+            tankClearWater = tile.getTankCleanWater();
+            battery = tile.getBattery();
+            waterTip.add("Вода");
+            waterTip.add(tankWater.getFluidAmount()+"/"+tankWater.getCapacity());
+            clearWaterTip.add("Очищенная вода");
+            clearWaterTip.add(tankClearWater.getFluidAmount()+"/"+tankClearWater.getCapacity());
+            energyTip.add("Энергия RF");
+            energyTip.add(battery.getEnergyStored()+"/"+battery.getMaxEnergyStored());
+
+            if (x > this.guiLeft + 24 && x < this.guiLeft + 26 + 16 && y > this.guiTop + 18 && y < this.guiTop + 20 + 58) {
+                this.drawHoveringText(waterTip, x - this.guiLeft, y - this.guiTop, this.fontRendererObj);
             }
-            //System.out.println(x-this.guiLeft+":"+(y-this.guiTop));
-            //Mouse.getX() = x*2
-            //Mouse.getY() = y*2 при отсчете снизу
-        }*/
+            if (x > this.guiLeft + 133 && x < this.guiLeft + 135 + 16 && y > this.guiTop + 18 && y < this.guiTop + 20 + 58) {
+                this.drawHoveringText(clearWaterTip, x - this.guiLeft, y - this.guiTop, this.fontRendererObj);
+            }
+            if (x > this.guiLeft + 123 && x < this.guiLeft + 125 + 5 && y > this.guiTop + 75 - 42&& y < this.guiTop + 77) {
+                this.drawHoveringText(energyTip, x - this.guiLeft, y - this.guiTop, this.fontRendererObj);
+            }
 
+        }
     }
 }

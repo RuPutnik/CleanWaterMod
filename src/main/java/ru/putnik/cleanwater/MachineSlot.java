@@ -1,6 +1,5 @@
 package ru.putnik.cleanwater;
 
-import com.thetorine.thirstmod.core.content.ItemLoader;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;

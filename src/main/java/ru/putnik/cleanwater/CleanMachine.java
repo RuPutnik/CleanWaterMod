@@ -4,8 +4,6 @@ package ru.putnik.cleanwater;
  * Created by My Computer on 26.08.2017.
  */
 import com.thetorine.thirstmod.core.main.ThirstMod;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.ITileEntityProvider;
@@ -55,7 +53,7 @@ public class CleanMachine extends BlockContainer implements ITileEntityProvider 
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player,
-                                    int par1, float par2, float par3, float par4) {
+                                    int side, float hitX, float hitY, float hitZ) {
         if (!player.isSneaking()) {
             player.openGui(instance, Constants.GuiIDCleanMachine, world, x, y, z);
             return true;
@@ -66,15 +64,15 @@ public class CleanMachine extends BlockContainer implements ITileEntityProvider 
     }
 
     @Override
-    public Item getItemDropped(int p_149650_1_, Random p_149650_2_, int p_149650_3_) {
+    public Item getItemDropped(int state, Random random, int fortune) {
         return Item.getItemFromBlock(CoreMod.cleanMachine);
     }
     @Override
-    public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
-        return new CleanMachineTile("CleanserInventory", true);
+    public TileEntity createNewTileEntity(World world, int metadata) {
+        return new CleanMachineTile();
     }
     @Override
-    public void breakBlock(World world, int x, int y, int z, Block block, int p_149749_6_) {
+    public void breakBlock(World world, int x, int y, int z, Block block, int metadata) {
         CleanMachineTile entity = (CleanMachineTile) world.getTileEntity(x, y, z);
 
         if (entity != null) {
@@ -114,22 +112,4 @@ public class CleanMachine extends BlockContainer implements ITileEntityProvider 
         }
 
     }
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z, Block block){
-        if(!world.isRemote) {
-            CleanMachineTile tile=(CleanMachineTile)world.getTileEntity(x,y,z);
-            if (tile.isPowerRedEnable() && !world.isBlockIndirectlyGettingPowered(x, y, z))
-            {
-                tile.setPowerRedEnable(false);
-            }
-            else if (!tile.isPowerRedEnable() && world.isBlockIndirectlyGettingPowered(x, y, z))
-            {
-                tile.setPowerRedEnable(true);
-            }
-
-        }
-    }
-
-
 }

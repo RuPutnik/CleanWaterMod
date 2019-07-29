@@ -74,40 +74,40 @@ public class CleanMachine extends BlockContainer implements ITileEntityProvider 
     @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int metadata) {
         CleanMachineTile entity = (CleanMachineTile) world.getTileEntity(x, y, z);
+        ItemStack itemStack;
 
         if (entity != null) {
-            ItemStack itemStack = entity.getStackInSlot(0);
+            for (int a=0;a<6;a++){
+                  itemStack= entity.getStackInSlot(a);
 
-            if (itemStack != null) {
-                float f = this.random.nextFloat() * 0.8F + 0.1F;
-                float f1 = this.random.nextFloat() * 0.8F + 0.1F;
-                float f2 = this.random.nextFloat() * 0.8F + 0.1F;
+                if (itemStack != null) {
+                    float f = this.random.nextFloat() * 0.8F + 0.1F;
+                    float f1 = this.random.nextFloat() * 0.8F + 0.1F;
+                    float f2 = this.random.nextFloat() * 0.8F + 0.1F;
 
-                while (itemStack.stackSize > 0) {
-                    int j1 = this.random.nextInt(21) + 10;
+                    while (itemStack.stackSize > 0) {
+                        int j1 = this.random.nextInt(21) + 10;
 
-                    if (j1 > itemStack.stackSize) {
-                        j1 = itemStack.stackSize;
+                        if (j1 > itemStack.stackSize) {
+                            j1 = itemStack.stackSize;
+                        }
+
+                        itemStack.stackSize -= j1;
+                        EntityItem entityItem = new EntityItem(world, (double) ((float) x + f), (double) ((float) y + f1),
+                                (double) ((float) z + f2), new ItemStack(itemStack.getItem(), j1, itemStack.getItemDamage()));
+
+                        if (itemStack.hasTagCompound()) {
+                            entityItem.getEntityItem().setTagCompound((NBTTagCompound) itemStack.getTagCompound().copy());
+                        }
+
+                        float f3 = 0.05F;
+                        entityItem.motionX = (double) ((float) this.random.nextGaussian() * f3);
+                        entityItem.motionY = (double) ((float) this.random.nextGaussian() * f3 + 0.2F);
+                        entityItem.motionZ = (double) ((float) this.random.nextGaussian() * f3);
+                        world.spawnEntityInWorld(entityItem);
                     }
-
-                    itemStack.stackSize -= j1;
-                    EntityItem entityItem = new EntityItem(world, (double) ((float) x + f), (double) ((float) y + f1),
-                            (double) ((float) z + f2), new ItemStack(itemStack.getItem(), j1, itemStack.getItemDamage()));
-
-                    if (itemStack.hasTagCompound()) {
-                        entityItem.getEntityItem().setTagCompound((NBTTagCompound) itemStack.getTagCompound().copy());
-                    }
-
-
-                    float f3 = 0.05F;
-                    entityItem.motionX = (double) ((float) this.random.nextGaussian() * f3);
-                    entityItem.motionY = (double) ((float) this.random.nextGaussian() * f3 + 0.2F);
-                    entityItem.motionZ = (double) ((float) this.random.nextGaussian() * f3);
-                    world.spawnEntityInWorld(entityItem);
                 }
             }
-
-
             world.func_147453_f(x, y, z, block);
         }
 

@@ -9,6 +9,7 @@ import buildcraft.core.lib.fluids.Tank;
 import buildcraft.core.lib.fluids.TankManager;
 import com.thetorine.thirstmod.core.content.ItemLoader;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInvBasic;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -29,14 +30,14 @@ import java.util.List;
  */
 public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,IPipeConnection,IFluidHandler,IRedstoneEngineReceiver {
     private String inventoryTitle="CleanserInventory";
-    private int slotsCount;
+    private int slotsCount=Constants.SlotCount;
     private ItemStack[] inventoryContents;
     private List field_70480_d;
     private Tank tankWater;
     private Tank tankCleanWater;
     private TankManager<Tank> tankManager;
     private int tempVolumeCleanWater=0;
-    private int damageFilter=0;
+    private double damageFilters[]=new double[]{0,0,0};
 
     private double rateProduction=1;
     private double rateEnergyCost=1;
@@ -45,7 +46,6 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
         if(this.inventoryContents==null) {
             this.inventoryContents = new ItemStack[Constants.SlotCount];
         }
-        this.slotsCount = Constants.SlotCount;
         tankWater=new Tank("tankWater", Constants.CapacityDirtWater, this);
         tankCleanWater=new Tank("tankCleanWater",Constants.CapacityClearWater,this);
         tankManager=new TankManager<>();
@@ -91,7 +91,8 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
             if (!worldObj.isRemote) {
                 if (checkCondition()) {
                     if (new Date().getTime() % 1000 < 50) {
-                        clearWater();
+                        int countWorkFilter=getCountWorkFiler();
+                        clearWater(countWorkFilter);
                         getBattery().setEnergy(getBattery().getEnergyStored()-(int)(Constants.AmountEnergyForOneCleaning *rateEnergyCost));
 
                         calculateRate();
@@ -102,7 +103,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
 
             }
     }
-    //Рассчитываем коэффициенты эффективност и затрат энергии в зависимости от количества запасенной энергии
+    //Рассчитываем коэффициенты эффективности и затрат энергии в зависимости от количества запасенной энергии
     // (а косвенно от количество приходящей энергии - для поддержания запаса)
     private void calculateRate(){
         if(getBattery().getEnergyStored()<Constants.CapacityEnergy/3){
@@ -154,23 +155,33 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
 
     }
 
-    @Override
+    @Override//Когда кладем предмет в некоторый слот
     public void setInventorySlotContents(int index, ItemStack stack) {
         if(this.inventoryContents!=null){
             this.inventoryContents[index] = stack;
             if(stack!=null&&stack.getItem()==ItemLoader.filter){
-                damageFilter = stack.getItemDamage();
+                damageFilters[index/2] = stack.getItemDamage();//если фильтр в 0 слоте, то повреждение фильтра в 0, если 2, то повреждения в 1, если 4, то во 2
             }
 
-            if(index==0){
+            if(index==0||index==2||index==4){
                 if (stack != null && stack.stackSize > this.getInventoryStackLimit()){
                     stack.stackSize = this.getInventoryStackLimit();
-
                 }
-            }else if(index==1){
+            }else if(index==1||index==3||index==5){
                 if (stack != null && stack.stackSize > 64) {
                     stack.stackSize = 64;
-
+                }
+            }else if(index==6&&stack!=null){
+                if (stack.getItem().equals(Items.water_bucket)) {
+                    //залить 1000 и вернуть пустое ведро
+                }else if(stack.getItem().equals(Items.potionitem)){
+                    //залить 500 и вернуть пустую колбу
+                }
+            }else if(index==7&&stack!=null){
+                if (stack.getItem().equals(Items.bucket)) {
+                    //вернуть ведро чистой воды и забрать 1000
+                }else if(stack.getItem().equals(Items.glass_bottle)){
+                    //вернуть колбу с очищенной водой и забрать 500
                 }
             }
             this.markDirty();
@@ -215,7 +226,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     public void readFromNBT(NBTTagCompound data) {
     super.readFromNBT(data);
     NBTTagList tagList = data.getTagList("Data", 10);
-    inventoryContents = new ItemStack[Constants.SlotCount];
+    inventoryContents = new ItemStack[slotsCount];
     if(data.hasKey("CleanserInventory", 8)){
         this.inventoryTitle = data.getString("CleanserInventory");
     }
@@ -234,7 +245,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
         super.writeToNBT(data);
         NBTTagList tagList = new NBTTagList();
         NBTTagCompound tagCompound;
-        for(int i = 0; i < this.inventoryContents.length; i++){
+        for(int i = 0; i < slotsCount; i++){
             if (getStackInSlot(i)!= null) {
                 tagCompound = new NBTTagCompound();
                 tagCompound.setByte("Slot", (byte) i);//Индекс слота
@@ -308,45 +319,91 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
         return this.tankManager.getTankInfo(from);
     }
 
-    private void litterFilter(int damage,ItemStack[] inventory){
-        if(inventory[0].getItem()==ItemLoader.filter) {
-            if (damage >= 5) {
-                ItemStack dirtyFilter = new ItemStack(ItemLoader.dirtyFilter);
-                if (inventory[1]!=null) {
-                    inventory[0]=null;
-                    ++inventory[1].stackSize;
-                }else {
-                    inventory[0]=null;
-                    inventory[1] = dirtyFilter;
+    private void litterFilter(double damages[],ItemStack[] inventory){
+        for(int n=0;n<=4;n=n+2){
+            int n1=0;
+            if(inventory[n]!=null&&inventory[n].getItem()==ItemLoader.filter) {
+                if (parseDoubleDamageToInt(damages[n1])>= 5) {
+                    ItemStack dirtyFilter = new ItemStack(ItemLoader.dirtyFilter);
+                    if (inventory[n+1]!=null) {
+                        inventory[n]=null;
+                        ++inventory[1].stackSize;
+                    }else {
+                        inventory[n]=null;
+                        inventory[n+1] = dirtyFilter;
+                    }
+                    markDirty();
                 }
-                markDirty();
             }
+            n1++;
         }
+
     }
     private boolean checkCondition(){
-        if(inventoryContents[0] != null &&(inventoryContents[0].getItem().equals(ItemLoader.filter)||
-                inventoryContents[0].getItem().equals(ItemLoader.charcoalFilter))&&checkSlotDirtyFilters(inventoryContents[1])){
+        if(checkSlotCondition()){
             //Если хватает энергии и бак с чистой водой не заполнен
             if(getBattery().getEnergyStored()>Constants.AmountEnergyForOneCleaning &&getTankCleanWater().getFluidAmount()<getTankCleanWater().getCapacity()) {
                 return tankWater.getFluid() != null && worldObj.isBlockIndirectlyGettingPowered(xCoord,yCoord,zCoord);
             }else return false;
         }else return false;
     }
+    private boolean checkSlotCondition(){
+        boolean result=false;
+
+        if(inventoryContents[0] != null &&(inventoryContents[0].getItem().equals(ItemLoader.filter))&&checkSlotDirtyFilters(inventoryContents[1])) result=true;
+        else if(inventoryContents[2] != null &&(inventoryContents[2].getItem().equals(ItemLoader.filter))&&checkSlotDirtyFilters(inventoryContents[3])) result=true;
+        else if(inventoryContents[4] != null &&(inventoryContents[4].getItem().equals(ItemLoader.filter))&&checkSlotDirtyFilters(inventoryContents[5])) result=true;
+
+
+        return result;
+    }
     //Проверяем, что слот для загрязненных фильтров не заполнен
     private boolean checkSlotDirtyFilters(ItemStack slot) {
         return slot == null || slot.stackSize < 64;
     }
-    private void clearWater() {
+    private void clearWater(int countWorkFiler) {
         tempVolumeCleanWater+=Constants.AmountCWaterAtATime;
         if (tempVolumeCleanWater >= Constants.AmountClearWaterForFilter) {
-            damageFilter++;
-            inventoryContents[0].setItemDamage(damageFilter);
+            double sizeDamage=1.0/countWorkFiler;
+            if(inventoryContents[0]!=null){
+                damageFilters[0]=damageFilters[0]+sizeDamage;
+                inventoryContents[0].setItemDamage(parseDoubleDamageToInt(damageFilters[0]));
+            }
+            if(inventoryContents[2]!=null){
+                damageFilters[1]=damageFilters[1]+sizeDamage;
+                inventoryContents[2].setItemDamage(parseDoubleDamageToInt(damageFilters[1]));
+            }
+            if(inventoryContents[4]!=null){
+                damageFilters[2]=damageFilters[2]+sizeDamage;
+                inventoryContents[4].setItemDamage(parseDoubleDamageToInt(damageFilters[2]));
+            }
             tempVolumeCleanWater = 0;
-            litterFilter(damageFilter, inventoryContents);
+            litterFilter(damageFilters, inventoryContents);
         }
         tankWater.drain((int)(Constants.AmountWaterAbsorbing * rateProduction), true);
         tankCleanWater.fill(new FluidStack(CoreMod.cleanWaterFluid, (int)(Constants.AmountCWaterAtATime * rateProduction)), true);
         markDirty();
+    }
+    private int getCountWorkFiler(){
+        int count=0;
+
+        if(inventoryContents[0]!=null) count++;
+        if(inventoryContents[2]!=null) count++;
+        if(inventoryContents[4]!=null) count++;
+
+        return count;
+    }
+    private int parseDoubleDamageToInt(double dmg){
+        int ip;//целая часть
+        double fp;//дробная часть
+        ip=(int)dmg;
+        fp=dmg-ip;
+
+        if(fp>0.9&&fp<1) dmg=ip+1;//0.333+0.333+0.333=0.999
+        if(fp>0.1&&fp<0.2) dmg=ip;//0.333+0.5+0.333=1.166
+
+
+        return (int)dmg;
     }
     @Override
     public Packet getDescriptionPacket() {
@@ -390,4 +447,3 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
         this.field_70480_d.remove(p_110132_1_);
     }
 }
-//ВОзомжно последнее повреждение сохранится если после него сделать какое то действие в мире: сломать блоки налить воды и т.д.

@@ -4,7 +4,7 @@ package ru.putnik.cleanwater;
  * Created by My Computer on 21.09.2017.
  */
 public class Constants {
-    public static final int SlotCount=2;//Количество слотов
+    public static final int SlotCount=9;//Количество слотов
     public static final int GuiIDCleanMachine=0;//ID GUI
 
     public static final int AmountClearWaterForFilter=1000;//кол-во очищенной воды, получаемый за 1 повреждение фильтра 5*1000=5000=5 ведер с одного фильтра

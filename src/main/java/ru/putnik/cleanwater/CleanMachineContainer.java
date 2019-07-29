@@ -7,8 +7,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionHelper;
-
 
 /**
  * Created by My Computer on 21.09.2017.

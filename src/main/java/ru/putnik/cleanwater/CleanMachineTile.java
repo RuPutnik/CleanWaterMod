@@ -42,6 +42,8 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     private double rateProduction=1;
     private double rateEnergyCost=1;
 
+    private int fillCup=0;
+
     public CleanMachineTile(){
         if(this.inventoryContents==null) {
             this.inventoryContents = new ItemStack[Constants.SlotCount];
@@ -180,37 +182,64 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
                     inventoryContents[6]=new ItemStack(Items.glass_bottle);
                 }
             }else if(index==7&&stack!=null){
-                if(!worldObj.isRemote) {
-                if (stack.getItem().equals(Items.bucket)) {
-                    //Сделать наливание постепенным
-                    if(inventoryContents[8]==null){
-                        if(tankCleanWater.getFluid().amount>=1000) {
-                            tankCleanWater.drain(1000, true);
-                            inventoryContents[7] = null;
-                            inventoryContents[8] = new ItemStack(ItemLoader.freshWaterBucket);
+                new Thread(() -> {
+                    boolean ac=false;
+                    while (!ac) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    }
-                }else if(stack.getItem().equals(Items.glass_bottle)){
-                    //Сделать наливание постепенным
-                        if (inventoryContents[8] == null || inventoryContents[8].getItem().equals(ItemLoader.freshWater)) {
-                            if (tankCleanWater.getFluid().amount >= 500) {
+                        if (!worldObj.isRemote) {
+                            if (stack.getItem().equals(Items.bucket)) {
                                 if (inventoryContents[8] == null) {
-                                    inventoryContents[8] = new ItemStack(ItemLoader.freshWater);
-                                    tankCleanWater.drain(500, true);
-                                    inventoryContents[7]=null;
-                                } else {
-                                    if (inventoryContents[8].stackSize < 4) {
-                                        inventoryContents[8].stackSize++;
-                                        tankCleanWater.drain(500, true);
-                                        inventoryContents[7]=null;
+                                    if (tankCleanWater.getFluid().amount >= 1000) {
+
+                                        tankCleanWater.drain(1000, true);
+                                        inventoryContents[7] = null;
+
+                                        updateProcessFillCup(300);
+                                        inventoryContents[8] = new ItemStack(ItemLoader.freshWaterBucket);
+                                        ac=true;
                                     }
                                 }
+                            }else if(stack.getItem().equals(Items.glass_bottle)){
+                                    if (tankCleanWater.getFluid().amount >= 500) {
+                                        if (inventoryContents[8] == null) {
+                                            tankCleanWater.drain(500, true);
+                                            inventoryContents[7]=null;
+                                            updateProcessFillCup(150);
+                                            inventoryContents[8] = new ItemStack(ItemLoader.freshWater);
+                                            ac=true;
+                                        } else if(inventoryContents[8].getItem().equals(ItemLoader.freshWater)){
+                                            if (inventoryContents[8].stackSize < 4) {
+                                                tankCleanWater.drain(500, true);
+                                                inventoryContents[7]=null;
+                                                updateProcessFillCup(150);
+                                                inventoryContents[8].stackSize++;
+                                                ac=true;
+                                            }
+                                        }
+                                    }
                             }
                         }
                     }
+                }).start();
                 }
             }
             this.markDirty();
+        }
+    private void updateProcessFillCup(int timeOneStage){
+        for (int a = 0; a < 11; a++) {
+            try {
+                fillCup = a;
+                markDirty();
+                Thread.sleep(timeOneStage);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            fillCup=0;
+            markDirty();
         }
     }
 
@@ -265,6 +294,8 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
 
         tankWater.readFromNBT(data);
         tankCleanWater.readFromNBT(data);
+
+        fillCup=data.getInteger("cupFill");
     }
     @Override
     public void writeToNBT(NBTTagCompound data) {
@@ -287,6 +318,8 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
         }
         tankWater.writeToNBT(data);
         tankCleanWater.writeToNBT(data);
+
+        data.setInteger("cupFill",fillCup);
     }
 
     @Override
@@ -471,5 +504,9 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     public void func_110132_b(IInvBasic p_110132_1_)
     {
         this.field_70480_d.remove(p_110132_1_);
+    }
+
+    public int getFillCup() {
+        return fillCup;
     }
 }

@@ -232,7 +232,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     private void updateProcessFillCup(int timeOneStage){
         for (int a = 0; a < 11; a++) {
             try {
-                fillCup = a;
+                fillCup = 2*a;
                 markDirty();
                 Thread.sleep(timeOneStage);
             } catch (InterruptedException e) {

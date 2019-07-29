@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by My Computer on 21.09.2017.
@@ -55,7 +56,7 @@ public class CleanMachineGui extends GuiBuildCraft {
         mc.renderEngine.bindTexture(location);
         this.drawTexturedModalRect(this.guiLeft + 26, this.guiTop + 20, 176, 0, 16, 60);
         this.drawTexturedModalRect(this.guiLeft + 135, this.guiTop + 20, 176, 0, 16, 60);
-        this.drawTexturedModalRect(this.guiLeft + 155, this.guiTop + 39, 176, 120, 25, 2*tile.getFillCup());
+        this.drawTexturedModalRect(this.guiLeft + 155, this.guiTop + 39, 176, 120, 25, Objects.requireNonNull(tile).getFillCup());
 
     }
     //Строит текстуру снизу вверх, то есть инвертивно

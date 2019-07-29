@@ -30,8 +30,8 @@ public class CleanMachineContainer extends BuildCraftContainer {
         this.addSlotToContainer(new MachineSlot(tile,5,99,58,null,64));
 
         this.addSlotToContainer(new MachineSlot(tile,6,6,40,new ItemStack[]{new ItemStack(Items.water_bucket),new ItemStack(Items.potionitem)},1));
-        this.addSlotToContainer(new MachineSlot(tile,7,154,22,new ItemStack[]{new ItemStack(Items.bucket),new ItemStack(Items.glass_bottle)},64));
-        this.addSlotToContainer(new MachineSlot(tile,8,154,58,null,64));
+        this.addSlotToContainer(new MachineSlot(tile,7,154,22,new ItemStack[]{new ItemStack(Items.bucket),new ItemStack(Items.glass_bottle)},1));
+        this.addSlotToContainer(new MachineSlot(tile,8,154,58,null,4));
 
         for (int i = 0; i < 3; ++i)
         {

@@ -77,7 +77,7 @@ public class CleanMachine extends BlockContainer implements ITileEntityProvider 
         ItemStack itemStack;
 
         if (entity != null) {
-            for (int a=0;a<6;a++){
+            for (int a=0;a<Constants.SlotCount;a++){
                   itemStack= entity.getStackInSlot(a);
 
                 if (itemStack != null) {

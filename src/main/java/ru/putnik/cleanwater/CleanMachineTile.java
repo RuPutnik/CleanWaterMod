@@ -173,15 +173,41 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
                 }
             }else if(index==6&&stack!=null){
                 if (stack.getItem().equals(Items.water_bucket)) {
-                    //залить 1000 и вернуть пустое ведро
+                    tankWater.fill(new FluidStack(FluidRegistry.WATER,1000),true);
+                    inventoryContents[6]=new ItemStack(Items.bucket);
                 }else if(stack.getItem().equals(Items.potionitem)){
-                    //залить 500 и вернуть пустую колбу
+                    tankWater.fill(new FluidStack(FluidRegistry.WATER,500),true);
+                    inventoryContents[6]=new ItemStack(Items.glass_bottle);
                 }
             }else if(index==7&&stack!=null){
+                if(!worldObj.isRemote) {
                 if (stack.getItem().equals(Items.bucket)) {
-                    //вернуть ведро чистой воды и забрать 1000
+                    //Сделать наливание постепенным
+                    if(inventoryContents[8]==null){
+                        if(tankCleanWater.getFluid().amount>=1000) {
+                            tankCleanWater.drain(1000, true);
+                            inventoryContents[7] = null;
+                            inventoryContents[8] = new ItemStack(ItemLoader.freshWaterBucket);
+                        }
+                    }
                 }else if(stack.getItem().equals(Items.glass_bottle)){
-                    //вернуть колбу с очищенной водой и забрать 500
+                    //Сделать наливание постепенным
+                        if (inventoryContents[8] == null || inventoryContents[8].getItem().equals(ItemLoader.freshWater)) {
+                            if (tankCleanWater.getFluid().amount >= 500) {
+                                if (inventoryContents[8] == null) {
+                                    inventoryContents[8] = new ItemStack(ItemLoader.freshWater);
+                                    tankCleanWater.drain(500, true);
+                                    inventoryContents[7]=null;
+                                } else {
+                                    if (inventoryContents[8].stackSize < 4) {
+                                        inventoryContents[8].stackSize++;
+                                        tankCleanWater.drain(500, true);
+                                        inventoryContents[7]=null;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             this.markDirty();

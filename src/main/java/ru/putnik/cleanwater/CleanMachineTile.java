@@ -98,6 +98,8 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
                         getBattery().setEnergy(getBattery().getEnergyStored()-(int)(Constants.AmountEnergyForOneCleaning *rateEnergyCost));
 
                         calculateRate();
+
+                        worldObj.playSoundEffect((double) xCoord + 0.5D, (double) yCoord + 0.5D, (double) zCoord + 0.5D, "cleanwatermod:cleanser", 5.0F, 1.0F);
                     }
                 }
                 worldObj.markBlockForUpdate(xCoord,yCoord,zCoord);

@@ -23,14 +23,16 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 
+import static ru.putnik.cleanwater.CoreMod.DEPENDENCIES;
 import static ru.putnik.cleanwater.CoreMod.MODID;
 
 /**
  * Created by My Computer on 26.08.2017.
  */
-@Mod(modid = MODID, dependencies = "required-after:BuildCraft|Core;required-after:thirstmod")
+@Mod(modid = MODID, dependencies = DEPENDENCIES)
 public class CoreMod {
     public static final String MODID = "cleanwatermod";
+    public static final String DEPENDENCIES="required-after:BuildCraft|Core;required-after:thirstmod";
     public static Block cleanMachine;
     public static Fluid cleanWaterFluid;
     public static Block cleanWaterBlock;

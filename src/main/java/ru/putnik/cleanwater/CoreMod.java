@@ -1,6 +1,11 @@
 package ru.putnik.cleanwater;
 
+import buildcraft.*;
+import buildcraft.core.config.BuildCraftConfiguration;
+import buildcraft.core.lib.block.BlockBuildCraft;
+import buildcraft.core.lib.gui.BuildCraftContainer;
 import com.thetorine.thirstmod.core.content.ItemLoader;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -10,6 +15,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,7 +28,7 @@ import static ru.putnik.cleanwater.CoreMod.MODID;
 /**
  * Created by My Computer on 26.08.2017.
  */
-@Mod(modid = MODID)
+@Mod(modid = MODID, dependencies = "required-after:BuildCraft|Core;required-after:thirstmod")
 public class CoreMod {
     public static final String MODID = "cleanwatermod";
     public static Block cleanMachine;
@@ -35,31 +41,40 @@ public class CoreMod {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-        cleanMachine = (new CleanMachine(Material.iron,this));
-        GameRegistry.registerBlock(cleanMachine, "cleanMachine");
-        LanguageRegistry.addName(cleanMachine,"Очистное сооружение");
+            cleanMachine = (new CleanMachine(Material.iron, this));
+            GameRegistry.registerBlock(cleanMachine, "cleanMachine");
+            LanguageRegistry.addName(cleanMachine, "Очистное сооружение");
 
-        cleanWaterFluid = new Fluid("CleanWaterFluid");
-        FluidRegistry.registerFluid(cleanWaterFluid);
-        FluidContainerRegistry.registerFluidContainer(cleanWaterFluid,new ItemStack(ItemLoader.freshWaterBucket),
-                new ItemStack(Items.bucket));
+            cleanWaterFluid = new Fluid("CleanWaterFluid");
+            FluidRegistry.registerFluid(cleanWaterFluid);
+            FluidContainerRegistry.registerFluidContainer(cleanWaterFluid, new ItemStack(ItemLoader.freshWaterBucket),
+                    new ItemStack(Items.bucket));
 
-        cleanWaterBlock = new FreshWaterFluid(cleanWaterFluid, Material.water);
-        GameRegistry.registerBlock(cleanWaterBlock, "cleanWaterBlock");
-        LanguageRegistry.addName(cleanWaterBlock, "Чистая вода");
+            cleanWaterBlock = new FreshWaterFluid(cleanWaterFluid, Material.water);
+            GameRegistry.registerBlock(cleanWaterBlock, "cleanWaterBlock");
+            LanguageRegistry.addName(cleanWaterBlock, "Чистая вода");
 
-        GameRegistry.registerTileEntity(CleanMachineTile.class,MODID+":CleanMachineTile");
-        FreshBucketHandler.INSTANCE.buckets.put(cleanWaterBlock, ItemLoader.freshWaterBucket);
+            GameRegistry.registerTileEntity(CleanMachineTile.class, MODID + ":CleanMachineTile");
+            FreshBucketHandler.INSTANCE.buckets.put(cleanWaterBlock, ItemLoader.freshWaterBucket);
 
-        ItemLoader.freshWaterBucket.setTextureName(CoreMod.MODID+":cleanwaterbucket");
+            ItemLoader.freshWaterBucket.setTextureName(CoreMod.MODID + ":cleanwaterbucket");
     }
     @Mod.EventHandler
     public void Init(FMLInitializationEvent event){
-        NetworkRegistry.INSTANCE.registerGuiHandler(this,new CleanMachineGuiHandler());
-
+            NetworkRegistry.INSTANCE.registerGuiHandler(this, new CleanMachineGuiHandler());
     }
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event){
-        MinecraftForge.EVENT_BUS.register(FreshBucketHandler.INSTANCE);
-    }
+    public void postInit(FMLPostInitializationEvent event) {
+            MinecraftForge.EVENT_BUS.register(FreshBucketHandler.INSTANCE);
+
+            GameRegistry.addRecipe(new ItemStack(cleanMachine, 1),
+                    "#X#", "ZYZ", "WXW",
+                    ('#'), GameRegistry.findItem("BuildCraft|Core", "goldGearItem"),
+                    ('W'), GameRegistry.findItem("BuildCraft|Core", "diamondGearItem"),
+                    ('X'), new ItemStack(GameRegistry.findBlock("BuildCraft|Core", "engineBlock"), 1, 1),
+                    ('Y'), Blocks.sticky_piston,
+                    ('Z'), GameRegistry.findBlock("BuildCraft|Factory", "tankBlock"));
+
+
+        }
 }

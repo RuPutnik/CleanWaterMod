@@ -2,7 +2,6 @@ package ru.putnik.cleanwater;
 
 import buildcraft.BuildCraftFactory;
 
-import com.test.testmod.BlockTestFluid;
 import com.thetorine.thirstmod.core.content.ItemLoader;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;

@@ -1,4 +1,3 @@
--recipe craft - 0.9
 -final texture - 0.9
 -sound - 0.9
 -news filters - 1.0

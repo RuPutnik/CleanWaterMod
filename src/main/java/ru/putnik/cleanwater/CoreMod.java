@@ -17,6 +17,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
@@ -36,6 +37,7 @@ public class CoreMod {
     public static Block cleanMachine;
     public static Fluid cleanWaterFluid;
     public static Block cleanWaterBlock;
+    public static Item cocaCola;
 
     @Mod.Instance(MODID)
     public static CoreMod INSTANCE;
@@ -60,6 +62,10 @@ public class CoreMod {
             FreshBucketHandler.INSTANCE.buckets.put(cleanWaterBlock, ItemLoader.freshWaterBucket);
 
             ItemLoader.freshWaterBucket.setTextureName(CoreMod.MODID + ":cleanwaterbucket");
+
+            cocaCola=new ColaBottle();
+            GameRegistry.registerItem(cocaCola,"cocacola");
+            LanguageRegistry.addName(cocaCola,"Кока-кола");
     }
     @Mod.EventHandler
     public void Init(FMLInitializationEvent event){
@@ -77,6 +83,9 @@ public class CoreMod {
                     ('Y'), Blocks.sticky_piston,
                     ('Z'), GameRegistry.findBlock("BuildCraft|Factory", "tankBlock"));
 
+            GameRegistry.addShapelessRecipe(new ItemStack(cocaCola,1),Items.sugar,Items.sugar,Items.blaze_powder,
+                    Items.blaze_powder,Items.fermented_spider_eye,Items.fermented_spider_eye,new ItemStack(Items.dye, 1, 0),
+                    new ItemStack(Items.dye, 1, 0),GameRegistry.findItem("thirstmod", "fresh_water"));
+    }
 
-        }
 }

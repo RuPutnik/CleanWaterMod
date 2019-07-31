@@ -50,6 +50,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
         this.tankManager.add(tankWater);
         this.tankManager.add(tankCleanWater);
         this.setBattery(new RFBattery(Constants.CapacityEnergy, Constants.MaxReceiveEnergy, 0));
+        playSound();
     }
 
     @Override
@@ -94,14 +95,28 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
                         getBattery().setEnergy(getBattery().getEnergyStored()-(int)(Constants.AmountEnergyForOneCleaning *rateEnergyCost));
 
                         calculateRate();
-
-                        worldObj.playSoundEffect((double) xCoord + 0.5D, (double) yCoord + 0.5D, (double) zCoord + 0.5D, "cleanwatermod:cleanser", 5.0F, 1.0F);
-                    }
+                        }
                 }
                 worldObj.markBlockForUpdate(xCoord,yCoord,zCoord);
                 updateContainingBlockInfo();
-
             }
+    }
+    private void playSound(){
+        new Thread(()->{
+            try {
+            while (true){
+                if(!worldObj.isRemote&&checkCondition()) {
+                    worldObj.playSoundEffect((double) xCoord, (double) yCoord, (double) zCoord, CoreMod.MODID + ":cleanser", 1.5F, 1.0F);
+                        Thread.sleep(15000);//длительность звука+небольшой перерыв
+                    System.out.println(xCoord+":"+yCoord+":"+zCoord);
+                }
+                    Thread.sleep(300);
+            }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
     }
     //Рассчитываем коэффициенты эффективности и затрат энергии в зависимости от количества запасенной энергии
     // (а косвенно от количество приходящей энергии - для поддержания запаса)
@@ -286,7 +301,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     //Данные слотов
     for(int i = 0; i < tagList.tagCount(); i++){
         NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
-        int j = tagCompound.getByte("Slot") & 255;//Индекс слота
+        int j = tagCompound.getByte("Slot") & 255;
         setInventorySlotContents(j,ItemStack.loadItemStackFromNBT(tagCompound));
     }
 
@@ -303,7 +318,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
         for(int i = 0; i < slotsCount; i++){
             if (getStackInSlot(i)!= null) {
                 tagCompound = new NBTTagCompound();
-                tagCompound.setByte("Slot", (byte) i);//Индекс слота
+                tagCompound.setByte("Slot", (byte) i);
                 tagCompound=getStackInSlot(i).writeToNBT(tagCompound);//Предмет в слоте
 
                 tagList.appendTag(tagCompound);

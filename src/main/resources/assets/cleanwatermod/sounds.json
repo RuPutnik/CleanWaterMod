@@ -1,0 +1,11 @@
+{
+  "cleanser": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "cleanser",
+        "stream": true
+      }
+    ]
+  }
+}

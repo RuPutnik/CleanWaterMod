@@ -106,9 +106,8 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
             try {
             while (true){
                 if(!worldObj.isRemote&&checkCondition()) {
-                    worldObj.playSoundEffect((double) xCoord, (double) yCoord, (double) zCoord, CoreMod.MODID + ":cleanser", 1.5F, 1.0F);
+                    worldObj.playSoundEffect((double) xCoord, (double) yCoord, (double) zCoord, CoreMod.MODID + ":cleanser", 1.2F, 1.0F);
                         Thread.sleep(15000);//длительность звука+небольшой перерыв
-                    System.out.println(xCoord+":"+yCoord+":"+zCoord);
                 }
                     Thread.sleep(300);
             }

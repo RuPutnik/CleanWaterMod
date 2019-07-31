@@ -10,7 +10,6 @@ import buildcraft.core.lib.fluids.TankManager;
 import com.thetorine.thirstmod.core.content.ItemLoader;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.IInvBasic;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,9 +20,7 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by My Computer on 09.09.2017.
@@ -32,7 +29,6 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     private String inventoryTitle="CleanserInventory";
     private int slotsCount=Constants.SlotCount;
     private ItemStack[] inventoryContents;
-    private List field_70480_d;
     private Tank tankWater;
     private Tank tankCleanWater;
     private TankManager<Tank> tankManager;
@@ -163,7 +159,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     public void setInventorySlotContents(int index, ItemStack stack) {
         if(this.inventoryContents!=null){
             this.inventoryContents[index] = stack;
-            if(stack!=null&&stack.getItem()==ItemLoader.filter){
+            if(stack!=null&&(stack.getItem()==ItemLoader.filter||stack.getItem()==CoreMod.industrialFilter||stack.getItem()==CoreMod.laboratoryFilter)){
                 damageFilters[index/2] = stack.getItemDamage();//если фильтр в 0 слоте, то повреждение фильтра в 0, если 2, то повреждения в 1, если 4, то во 2
             }
 
@@ -276,7 +272,7 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     @Override
     public boolean isItemValidForSlot(int indexSlot, ItemStack stack) {
         if(stack!=null){
-            return (stack.getItem() == ItemLoader.filter);
+            return (stack.getItem() == ItemLoader.filter||stack.getItem() == CoreMod.industrialFilter||stack.getItem() == CoreMod.laboratoryFilter);
         } else return false;
     }
     @Override
@@ -383,15 +379,32 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     private void litterFilter(double damages[],ItemStack[] inventory){
         for(int n=0;n<=4;n=n+2){
             int n1=0;
-            if(inventory[n]!=null&&inventory[n].getItem()==ItemLoader.filter) {
-                if (parseDoubleDamageToInt(damages[n1])>= 5) {
-                    ItemStack dirtyFilter = new ItemStack(ItemLoader.dirtyFilter);
-                    if (inventory[n+1]!=null) {
-                        inventory[n]=null;
-                        ++inventory[1].stackSize;
-                    }else {
-                        inventory[n]=null;
-                        inventory[n+1] = dirtyFilter;
+            if(inventory[n]!=null&&(inventory[n].getItem()==ItemLoader.filter||inventory[n].getItem()==CoreMod.laboratoryFilter||
+                    inventory[n].getItem()==CoreMod.industrialFilter)) {
+                if (parseDoubleDamageToInt(damages[n1])>=(inventory[n].getItem().getMaxDamage()+1)) {
+                    ItemStack dirtyFilter;
+                    if(inventory[n].getItem()==ItemLoader.filter) {//Если обычный фильтр, то получаем загрязненный в нижнем слоте, иначе
+                        //просто уничтожается
+                         dirtyFilter = new ItemStack(ItemLoader.dirtyFilter);
+                        if (inventory[n + 1] != null) {
+                            inventory[n] = null;
+                            ++inventory[1].stackSize;
+                        } else {
+                            inventory[n] = null;
+                            inventory[n + 1] = dirtyFilter;
+                        }
+                    }else if(inventory[n].getItem()==CoreMod.industrialFilter){
+                        dirtyFilter = new ItemStack(CoreMod.dirtyIndustrialFilter);
+                        if (inventory[n + 1] != null) {
+                            inventory[n] = null;
+                            ++inventory[1].stackSize;
+                        } else {
+                            inventory[n] = null;
+                            inventory[n + 1] = dirtyFilter;
+                        }
+                        inventory[n] = null;
+                    }else{
+                        inventory[n] = null;
                     }
                     markDirty();
                 }
@@ -411,16 +424,32 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
     private boolean checkSlotCondition(){
         boolean result=false;
 
-        if(inventoryContents[0] != null &&(inventoryContents[0].getItem().equals(ItemLoader.filter))&&checkSlotDirtyFilters(inventoryContents[1])) result=true;
-        else if(inventoryContents[2] != null &&(inventoryContents[2].getItem().equals(ItemLoader.filter))&&checkSlotDirtyFilters(inventoryContents[3])) result=true;
-        else if(inventoryContents[4] != null &&(inventoryContents[4].getItem().equals(ItemLoader.filter))&&checkSlotDirtyFilters(inventoryContents[5])) result=true;
-
+        if(inventoryContents[0] != null &&(inventoryContents[0].getItem().equals(ItemLoader.filter)||inventoryContents[0].getItem().equals(CoreMod.industrialFilter)||inventoryContents[0].getItem().equals(CoreMod.laboratoryFilter))&&checkSlotDirtyFilters(1)) result=true;
+        else if(inventoryContents[2] != null &&(inventoryContents[2].getItem().equals(ItemLoader.filter)||inventoryContents[2].getItem().equals(CoreMod.industrialFilter)||inventoryContents[2].getItem().equals(CoreMod.laboratoryFilter))&&checkSlotDirtyFilters(3)) result=true;
+        else if(inventoryContents[4] != null &&(inventoryContents[4].getItem().equals(ItemLoader.filter)||inventoryContents[4].getItem().equals(CoreMod.industrialFilter)||inventoryContents[4].getItem().equals(CoreMod.laboratoryFilter))&&checkSlotDirtyFilters(5)) result=true;
 
         return result;
     }
-    //Проверяем, что слот для загрязненных фильтров не заполнен
-    private boolean checkSlotDirtyFilters(ItemStack slot) {
-        return slot == null || slot.stackSize < 64;
+    //Проверяем, что слот для загрязненных фильтров не заполнен, или используется фильтр, не выдающий загрязненных, тогда нижний слот не важен
+    private boolean checkSlotDirtyFilters(int numberSlot) {
+        boolean result;
+
+        if(inventoryContents[numberSlot] == null){
+            result=true;
+        }else if(inventoryContents[numberSlot-1].getItem().equals(CoreMod.laboratoryFilter)){
+            result=true;
+        }else if(inventoryContents[numberSlot].stackSize < 64){
+            if(inventoryContents[numberSlot-1].getItem().equals(CoreMod.industrialFilter)&&inventoryContents[numberSlot].getItem().equals(CoreMod.dirtyIndustrialFilter)){
+                result=true;
+            }else if(inventoryContents[numberSlot-1].getItem().equals(ItemLoader.filter)&&inventoryContents[numberSlot].getItem().equals(ItemLoader.dirtyFilter)){
+                result=true;
+            }else{
+                result=false;
+            }
+        }else{
+            result=false;
+        }
+        return result;
     }
     private void clearWater(int countWorkFiler) {
         tempVolumeCleanWater+=Constants.AmountCWaterAtATime;
@@ -492,20 +521,6 @@ public class CleanMachineTile extends TileBuildCraft implements ISidedInventory,
 
     public Tank getTankCleanWater() {
         return tankCleanWater;
-    }
-    //Нужны ли эти методы??
-    public void func_110134_a(IInvBasic p_110134_1_)
-    {
-        if (this.field_70480_d == null)
-        {
-            this.field_70480_d = new ArrayList();
-        }
-
-        this.field_70480_d.add(p_110134_1_);
-    }
-    public void func_110132_b(IInvBasic p_110132_1_)
-    {
-        this.field_70480_d.remove(p_110132_1_);
     }
 
     public int getFillCup() {

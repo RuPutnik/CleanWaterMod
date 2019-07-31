@@ -18,13 +18,13 @@ public class CleanMachineContainer extends BuildCraftContainer {
         super(Constants.SlotCount);
         machineTile=tile;
 
-        this.addSlotToContainer(new MachineSlot(tile,0,59,24,new ItemStack[]{new ItemStack(ItemLoader.filter)},1));
+        this.addSlotToContainer(new MachineSlot(tile,0,59,24,new ItemStack[]{new ItemStack(ItemLoader.filter),new ItemStack(CoreMod.industrialFilter),new ItemStack(CoreMod.laboratoryFilter)},1));
         this.addSlotToContainer(new MachineSlot(tile,1,59,58,null,64));
 
-        this.addSlotToContainer(new MachineSlot(tile,2,79,24,new ItemStack[]{new ItemStack(ItemLoader.filter)},1));
+        this.addSlotToContainer(new MachineSlot(tile,2,79,24,new ItemStack[]{new ItemStack(ItemLoader.filter),new ItemStack(CoreMod.industrialFilter),new ItemStack(CoreMod.laboratoryFilter)},1));
         this.addSlotToContainer(new MachineSlot(tile,3,79,58,null,64));
 
-        this.addSlotToContainer(new MachineSlot(tile,4,99,24,new ItemStack[]{new ItemStack(ItemLoader.filter)},1));
+        this.addSlotToContainer(new MachineSlot(tile,4,99,24,new ItemStack[]{new ItemStack(ItemLoader.filter),new ItemStack(CoreMod.industrialFilter),new ItemStack(CoreMod.laboratoryFilter)},1));
         this.addSlotToContainer(new MachineSlot(tile,5,99,58,null,64));
 
         this.addSlotToContainer(new MachineSlot(tile,6,6,40,new ItemStack[]{new ItemStack(Items.water_bucket),new ItemStack(Items.potionitem)},1));

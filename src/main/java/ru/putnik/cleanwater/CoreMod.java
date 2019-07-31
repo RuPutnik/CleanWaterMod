@@ -38,6 +38,9 @@ public class CoreMod {
     public static Fluid cleanWaterFluid;
     public static Block cleanWaterBlock;
     public static Item cocaCola;
+    public static Item industrialFilter;
+    public static Item laboratoryFilter;
+    public static Item dirtyIndustrialFilter;
 
     @Mod.Instance(MODID)
     public static CoreMod INSTANCE;
@@ -66,6 +69,18 @@ public class CoreMod {
             cocaCola=new ColaBottle();
             GameRegistry.registerItem(cocaCola,"cocacola");
             LanguageRegistry.addName(cocaCola,"Кока-кола");
+
+            industrialFilter=new IndustrialFilter();
+            GameRegistry.registerItem(industrialFilter,"industrialfilter");
+            LanguageRegistry.addName(industrialFilter,"Промышленный фильтр");
+
+            laboratoryFilter=new LaboratoryFilter();
+            GameRegistry.registerItem(laboratoryFilter,"laboratoryfilter");
+            LanguageRegistry.addName(laboratoryFilter,"Лабораторный фильтр");
+
+            dirtyIndustrialFilter=new DirtyIndustrialFilter();
+            GameRegistry.registerItem(dirtyIndustrialFilter,"dirtyindustrfilter");
+            LanguageRegistry.addName(dirtyIndustrialFilter,"Загрязненный промышленный фильтр");
     }
     @Mod.EventHandler
     public void Init(FMLInitializationEvent event){
@@ -86,6 +101,22 @@ public class CoreMod {
             GameRegistry.addShapelessRecipe(new ItemStack(cocaCola,1),Items.sugar,Items.sugar,Items.blaze_powder,
                     Items.blaze_powder,Items.fermented_spider_eye,Items.fermented_spider_eye,new ItemStack(Items.dye, 1, 0),
                     new ItemStack(Items.dye, 1, 0),GameRegistry.findItem("thirstmod", "fresh_water"));
-    }
 
+            GameRegistry.addRecipe(new ItemStack(industrialFilter, 1),
+                     "#X#", "ZYZ", "###",
+                    ('X'), Items.redstone,
+                    ('#'), Items.stick,
+                    ('Y'), Items.quartz,
+                    ('Z'), Items.gold_ingot);
+
+            GameRegistry.addShapelessRecipe(new ItemStack(industrialFilter,1),dirtyIndustrialFilter,
+                Items.blaze_rod,Items.gold_ingot);
+
+            GameRegistry.addRecipe(new ItemStack(laboratoryFilter, 1),
+                    "#X#", "ZYZ", "#Z#",
+                    ('#'), Items.redstone,
+                    ('X'), GameRegistry.findItem("BuildCraft|Core", "goldGearItem"),
+                    ('Y'), Items.diamond,
+                    ('Z'), Blocks.wool);
+    }
 }

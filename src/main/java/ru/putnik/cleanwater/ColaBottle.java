@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 public class ColaBottle extends ItemInternalDrink {
     public ColaBottle() {
         super(12,5,0,CoreMod.MODID+":cocacola",4);
+        setUnlocalizedName(CoreMod.MODID+"."+"cocacola");
         returnItem=Items.glass_bottle;
     }
     @Override

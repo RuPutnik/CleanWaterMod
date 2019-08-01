@@ -1,10 +1,7 @@
 package ru.putnik.cleanwater;
 
-import com.thetorine.thirstmod.core.content.ItemDrink;
 import com.thetorine.thirstmod.core.content.ItemInternalDrink;
-import com.thetorine.thirstmod.core.main.ThirstMod;
 import com.thetorine.thirstmod.core.player.PlayerContainer;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;

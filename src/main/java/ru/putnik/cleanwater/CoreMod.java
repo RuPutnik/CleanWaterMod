@@ -1,11 +1,6 @@
 package ru.putnik.cleanwater;
 
-import buildcraft.*;
-import buildcraft.core.config.BuildCraftConfiguration;
-import buildcraft.core.lib.block.BlockBuildCraft;
-import buildcraft.core.lib.gui.BuildCraftContainer;
 import com.thetorine.thirstmod.core.content.ItemLoader;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;

@@ -45,7 +45,6 @@ public class FreshBucketHandler {
         }
     }
 
-    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void rightClickWithBucket(PlayerInteractEvent event) {
         int x=event.x;
@@ -94,7 +93,9 @@ public class FreshBucketHandler {
                                 if(!event.entityPlayer.capabilities.isCreativeMode) {
                                     int currentItem = inventory.currentItem;
                                     --inventory.mainInventory[currentItem].stackSize;
-                                    inventory.setInventorySlotContents(currentItem, new ItemStack(Items.bucket));
+                                    if(!world.isRemote) {
+                                        inventory.setInventorySlotContents(currentItem, new ItemStack(Items.bucket));
+                                    }
                                 }
                                 //Если пытаемся ставить в аду - испаряется как и обычная вода
                                 if(!world.provider.isHellWorld) {
